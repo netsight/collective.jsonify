@@ -4,7 +4,8 @@ Changelog
 1.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Add support for context portlets.
+  [buchi]
 
 
 1.0 (2015-05-16)
