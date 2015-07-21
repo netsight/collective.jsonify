@@ -29,8 +29,10 @@ parser.add_argument('--ploneurl',
                     required=True,
                     help='URL to plone (e.g. http://localhost:8080/Plone)')
 parser.add_argument('--meta_type',
+                    default='',
                     help='meta_type to export (e.g Document)')
 parser.add_argument('--path',
+                    default='',
                     help='path to export (e.g. /plone/news)')
 parser.add_argument('--total',
                     required=True,
@@ -52,8 +54,8 @@ if not (args.path or args.meta_type):
 
 print 'Trying to reindex %s of type %s%s (batch size %s)' % (
     args.total,
-    args.path and ' in path %s' % args.path or '',
     args.meta_type or '(All)',
+    args.path and ' in path %s' % args.path or '',
     args.b_size)
 
 user = raw_input(
@@ -71,9 +73,10 @@ while b_start < args.total:
     subprocess.call([args.zopeclient, 'start'])
     print 'Waiting for zope...'
     sleep(15)
-    url = '%s/@@export?meta_type=%s&b_size=%s&b_start=%s&export_dir=%s' % (
+    url = '%s/@@export?meta_type=%s&path=%s&b_size=%s&b_start=%s&export_dir=%s' % (
         args.ploneurl,
         args.meta_type,
+        args.path,
         args.b_size,
         b_start,
         args.output)
