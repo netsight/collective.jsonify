@@ -148,7 +148,8 @@ class ExportView(BrowserView):
         if not export_dir:
             return 'Please provide an export_dir'
 
-        query = {}
+        # ensure a consistent order between batches
+        query = {'sort_on': 'path'}
         if meta_type:
             query['meta_type'] = meta_type
             logger.info("Exporting type: %s" % meta_type)
