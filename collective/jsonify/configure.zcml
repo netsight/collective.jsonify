@@ -10,4 +10,12 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      name="export"
+      for="*"
+      class=".browser.ExportView"
+      attribute="export"
+      permission="zope2.View"
+      />
+
 </configure>

@@ -1,3 +1,6 @@
+import logging
+import time
+import os
 from Acquisition import aq_inner
 from Products.Five.browser import BrowserView
 from Products.CMFCore.utils import getToolByName
@@ -12,6 +15,9 @@ try:
     import simplejson as json
 except:
     import json
+
+
+logger = logging.getLogger(__name__)
 
 
 class JsonifyView(BrowserView):
@@ -124,3 +130,63 @@ class JsonifyView(BrowserView):
             return JSON
         except Exception, e:
             return 'ERROR: wrapped object is not serializable: %s' % str(e)
+
+
+class ExportView(BrowserView):
+
+    def export(
+            self,
+            meta_type=None,
+            path=None,
+            b_size=None,
+            b_start=0,
+            export_dir=None):
+
+        if not (meta_type or path):
+            return 'Please provide a meta_type or a path'
+
+        if not export_dir:
+            return 'Please provide an export_dir'
+
+        query = {}
+        if meta_type:
+            query['meta_type'] = meta_type
+            logger.info("Exporting type: %s" % meta_type)
+        if path:
+            query['path'] = path
+            logger.info("Exporting path: %s" % path)
+
+        logger.info('Exporting items to: %s' % export_dir)
+        catalog = getToolByName(self.context, 'portal_catalog')
+
+        brains = catalog.searchResults(query)
+        logger.info("Found %s items" % len(brains))
+
+        # batching support
+        if b_size is not None:
+            b_size = int(b_size)
+            b_start = int(b_start)
+            logger.info('Exporting items %s to %s' % (
+                b_start + 1, b_start + b_size + 1,
+            ))
+            brains = brains[b_start:b_start + b_size]
+
+        total = len(brains)
+
+        for index, b in enumerate(brains):
+            ob = b.getObject()
+            logger.info("Exporting: %s (%s/%s)" % (
+                b.getPath(),
+                index + 1,
+                total,
+            ))
+            context_dict = Wrapper(ob)
+            JSON = json.dumps(context_dict)
+            file_path = os.path.join(export_dir, '%s.json' % ob.UID())
+            export_file = open(file_path, 'w')
+            export_file.write(JSON)
+            export_file.close()
+
+        message = "Exported %s item(s) OK." % (total)
+        logger.info(message)
+        return message
