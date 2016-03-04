@@ -307,9 +307,9 @@ def walk(folder, skip_callback=lambda item: False):
             ))
             continue
         if skip_callback and skip_callback(item):
-            continue
-
-        yield item
+            pass  # don't export this, but continue to any children
+        else:
+            yield item
         if getattr(item, 'objectIds', None) and item.objectIds():
             for subitem in walk(item, skip_callback=skip_callback):
                 yield subitem
