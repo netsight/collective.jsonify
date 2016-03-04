@@ -111,8 +111,9 @@ class Wrapper(dict):
                     except ValueError:
                         max_filesize = 20000000
 
-                    if data and len(data) > max_filesize:
-                        continue
+                    # mattss - no max filesize please
+                    #if data and len(data) > max_filesize:
+                    #    continue
 
                     import base64
                     ctype = value.contentType
@@ -281,7 +282,7 @@ class Wrapper(dict):
                 except ValueError:
                     max_filesize = 20000000
 
-                if value and len(value) < max_filesize:
+                if value:  # and len(value) < max_filesize:
                     size = value2.getSize()
                     try:
                         fname = field.getFilename(self.context)
@@ -749,7 +750,7 @@ class Wrapper(dict):
             except ValueError:
                 max_filesize = 20000000
 
-            if value and len(value) < max_filesize:
+            if value:  # and len(value) < max_filesize:
                 size = orig_value.getSize()
                 fname = orig_value.getId()
                 try:
